@@ -141,19 +141,19 @@ def sign_in(request, *args, **kwargs) -> HttpResponse:
     return Response(status = user_status)
     
 @api_view(['POST'])
-def sign_out(request, username : str, *args, **kwargs) -> HttpResponse: 
+def sign_out(request, *args, **kwargs) -> HttpResponse: 
     """
     Signs a user in
      
     Inputs    
-       :param request: <HttpRequest> to sign a user out
+       :param request: <HttpRequest> to sign a user out containing the user's email
 
     Outputs
        :returns: Status … 
                         … HTTP_200_OK if the user is signed out
                         … HTTP_403_FORBIDDEN if the user is not signed out
     """
-    verify_fields         = []
+    verify_fields         = ['email']
     user_status           = _is_subset(verify_fields, request.data.keys())
 
     if user_status == status.HTTP_200_OK: logout(request)
