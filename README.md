@@ -1,1 +1,1 @@
-# Custom User API
+# User
