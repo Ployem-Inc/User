@@ -5,7 +5,7 @@ from rest_framework import status
 from django.core.validators import validate_email
 from django.contrib.auth.models import BaseUserManager
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from user_utils.view_helpers import _validate_date, _validate_password
+from .user_utils.view_helpers import _validate_date, _validate_password
 
 ##### Classes #####
 class CustomUserManager(BaseUserManager):
@@ -56,7 +56,7 @@ class CustomUserManager(BaseUserManager):
         Inputs
             :param first_name: <str> first name of the user
             :param last_name: <str> last name of the user
-            :param date_of_birth: <str> date of birth of the user
+            :param date_of_birth: <datetime> date of birth of the user
             :param email: <str> email of the user
             :param password: <str> password protecting user's account
 
@@ -88,6 +88,43 @@ class CustomUserManager(BaseUserManager):
             user.save(using = self._db)
 
             return user, status.HTTP_201_CREATED
+
+    def create_superuser(self, first_name, last_name, date_of_birth, email, password = None):
+        """
+        Creates and saves first-time user first_name last_name born on date_of_birth with email and password
+        
+        Definitions 
+            user 
+                ployem memeber with access to everything except any administative, private, and regulatory functions
+
+                A user can view public tools but can not regulate them without permission
+
+        Inputs
+            :param first_name: <str> first name of the user
+            :param last_name: <str> last name of the user
+            :param date_of_birth: <datetime> date of birth of the user
+            :param email: <str> email of the user
+            :param password: <str> password protecting user's account
+
+        Outputs
+            :returns: <CustomUser> representing the newly created and saved user  
+                      Status ...
+                             ... HTTP_201_CREATED if the user is signed up successfully
+                             ... HTTP_403_FORBIDDEN if email is unreachable 
+                             ... HTTP_412_PRECONDITION_FAILED if one ore more of the request fields don't meet their precondition(s)          
+        """
+        user, user_status = self.create(first_name, last_name, date_of_birth, email, password=password)
+
+        if user_status == status.HTTP_201_CREATED:
+            print("User created\nSetting permissions ...")
+            user.is_staff = True
+            user.is_admin = True
+            user.is_superuser = True
+            user.save(using = self._db)
+        else: print(f"Failed to create user: {user_status}")
+
+        return user, user_status
+
 
     def upgrade(self):
         """             

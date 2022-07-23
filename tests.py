@@ -35,9 +35,9 @@ class UserTests(APITestCase):
                 Fake emails are usually unreachable
 
         Partition ... 
-            ... on signup   (in)valid request, (in)complete fields, (un)met precondition(s), (un)reachable / (non)existing email 
-            ... on verify   (in)valid verification code
-            ... on signin   (in)valid request, (non)existing / (un)verified user 
+            ... on signup (in)valid request, (in)complete fields, (un)met precondition(s), (un)reachable / (non)existing email 
+            ... on verify (in)valid verification code
+            ... on signin (in)valid request, (non)existing / (un)verified user 
     """
     ##### Signup Tests #####
     def test_signup_invalid(self):

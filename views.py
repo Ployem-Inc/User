@@ -1,14 +1,16 @@
 """
 user views
 """
+import json
 from .models import CustomUser
 from rest_framework import status
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from user_utils.view_helpers import _is_subset
+from .user_utils.view_helpers import _is_subset
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 
 @api_view(['POST'])
@@ -26,6 +28,7 @@ def sign_up(request, *args, **kwargs) -> Response:
                          ... HTTP_412_PRECONDITION_FAILED if one ore more of the request fields don't meet their precondition(s)  
     """
     signup_fields = ["firstName", "lastName", "dateOfBirth", "email", "password"]
+    print(request.data)
     user_status   = _is_subset(signup_fields, request.data.keys())
 
     if user_status == status.HTTP_200_OK:
@@ -34,7 +37,7 @@ def sign_up(request, *args, **kwargs) -> Response:
         last_name     = request.data['lastName']
         first_name    = request.data['firstName']
         date_of_birth = request.data['dateOfBirth']
-
+        print(f"Signing up user {first_name} {last_name} born on {date_of_birth}")
         user, user_status  = CustomUser.objects.create(first_name, last_name, date_of_birth, email, password)
 
     return Response(status = user_status)
@@ -139,7 +142,8 @@ def sign_in(request, *args, **kwargs) -> HttpResponse:
             user_status = status.HTTP_200_OK
     
     return Response(status = user_status)
-    
+
+@login_required   
 @api_view(['POST'])
 def sign_out(request, *args, **kwargs) -> HttpResponse: 
     """

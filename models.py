@@ -4,14 +4,15 @@ user models
 import uuid
 from django.db import models
 from .managers import CustomUserManager
-from user_utils.model_helpers import _send_email
+from .user_utils.model_helpers import _send_email
 from django.contrib.auth.models import AbstractBaseUser
+from django.contrib.auth.models import PermissionsMixin
 
 ##### Global Constants #####
 alphabet_size = 26
 
 ##### Classes #####
-class CustomUser(AbstractBaseUser):
+class CustomUser(AbstractBaseUser, PermissionsMixin):
     """
     AF(first_name, last_name, date_of_birth, email) = user first_name last_name born on date_of_birth reachable at email
     
@@ -30,8 +31,9 @@ class CustomUser(AbstractBaseUser):
     email             = models.EmailField(max_length = 9*alphabet_size, unique = True)
 
     is_active         = models.BooleanField(default  = True)
-    admin             = models.BooleanField(default  = False)
-    staff             = models.BooleanField(default  = False)
+    is_superuser      = models.BooleanField(default  = False)
+    is_admin          = models.BooleanField(default  = False)
+    is_staff          = models.BooleanField(default  = False)
     verified          = models.BooleanField(default  = False)
     id                = models.UUIDField(primary_key = True,  editable = False, unique = True, default = uuid.uuid4)
     verification_code = models.UUIDField(primary_key = False, editable = False, unique = True, default = uuid.uuid4)

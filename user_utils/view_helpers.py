@@ -28,9 +28,9 @@ def _validate_date(date):
     """
     RegexValidator(date_regex)(date)
 
-    day   = int(date[8:])
-    year  = int(date[:4])
-    month = months[int(date[5:7])]
+    day   = date.day
+    year  = date.year
+    month = months[date.month + 1]
 
     if month == "FEB":
         if day > 29 or (not _leap_year(year) and day == 29): 
